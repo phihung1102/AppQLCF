@@ -1,16 +1,27 @@
 import { getAllProduct, getProduct, createProduct, updateProduct, deleteProduct } from "./model.js";
-import { getImageByProduct } from "../image/model.js";
+import { getImageByProduct, createImage, deleteImage } from "../image/model.js";
 
 export const getAllProductSV = () => getAllProduct();
+export const getProductSV = (id) => getProduct(id);
 
-export const getProductSV = async (id) => {
-  const product = await getProduct(id);
-  if (product) {
-    product.images = await getImageByProduct(id);
+export const createProductSV = (name, price, status, category_id, imageUrl) => createProduct(name, price, status, category_id)
+  .then(async (id) => {
+    if (imageUrl) await createImage(id, imageUrl);
+    return id;
+  });
+  
+export const updateProductSV = async (id, name, price, status, category_id, imageUri) => {
+  await updateProduct(id, name, price, status, category_id);
+  if (imageUri) {
+    const existing = await getImageByProduct(id);
+    if (existing) await deleteImage(existing.id);
+    await createImage(id, imageUri);
   }
-  return product;
-};
+  return true;
+} 
 
-export const createProductSV = (name, price, status, category_id) => createProduct(name, price, status, category_id);
-export const updateProductSV = (id, name, price, status, category_id) => updateProduct(id, name, price, status, category_id);
-export const deleteProductSV = (id) => deleteProduct(id);
+export const deleteProductSV = async (id) => {
+  const existing = await getImageByProduct(id);
+  if (existing) await deleteImage(existing.id);
+  await deleteProduct(id);
+};

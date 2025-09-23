@@ -13,25 +13,16 @@ export const getProductCTL = catchAsync(async (req, res) => {
 });
 
 export const createProductCTL = catchAsync(async (req, res) => {
-  const id = await createProductSV(
-    req.body.name,
-    req.body.price,
-    req.body.status,
-    req.body.category_id
-  );
+  const { name, price, status, category_id, imageUrl } = req.body;
+  const id = await createProductSV( name, price, status, category_id, imageUrl );
   res.json({ id });
   getIO().emit("product_updated");
 });
 
 export const updateProductCTL = catchAsync(async (req, res) => {
-  const updated = await updateProductSV(
-    req.params.id,
-    req.body.name,
-    req.body.price,
-    req.body.status,
-    req.body.category_id
-  );
-  res.json({ updated });
+  const { name, price, status, category_id, imageUrl } = req.body;
+  await updateProductSV(req.params.id, name, price, status, category_id, imageUrl );
+  res.json({ updated: true });
   getIO().emit("product_updated");
 });
 

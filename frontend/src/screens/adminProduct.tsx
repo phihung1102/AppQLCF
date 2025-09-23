@@ -64,20 +64,14 @@ const AdminProduct = () => {
   const fetchProducts = async () => {
     try {
       const res = await ProductApi.getAll();
-      const productsWithCategoryAndImage = await Promise.all(
-        res.data.map(async (p: any) => {
-          const category = categories.find(c => c.id === p.category_id);
-          const imgRes = await ImageApi.getImage(p.id);
-          const imageUrl = imgRes.data[0]?.image_url ? `${BASE_URL}${imgRes.data[0].image_url}` : null ;
-          return {
-            ...p,
-            category_name: category?.name || "",
-            image: imageUrl,
-            imageId: imgRes.data[0]?.id || null,
-          };
-        })
+      console.log(res.data.map((p: { id: any; }) => p.id));
+      setProducts(
+        res.data.map((p: any) => ({
+          ...p,
+          image: p.image?.url ? `${BASE_URL}${p.image.url}` : null,
+          imageId: p.image?.id || null,
+        }))
       );
-      setProducts(productsWithCategoryAndImage.reverse());
     } catch (error) { console.log(error); }
   };
 

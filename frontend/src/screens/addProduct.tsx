@@ -62,16 +62,13 @@ const AddProduct = () => {
                     Alert.alert("Vui lòng chọn ảnh cho sản phẩm!");
                     return;
                 }
-                const res = await ProductApi.create(name.trim(), Number(price), "available", Number(categoryId));
-                await ImageApi.create(res.data.id, imageUri);
+                await ProductApi.create(name.trim(), Number(price), "available", Number(categoryId), imageUri);
             } else {
-                await ProductApi.update(product!.id, name.trim(), Number(price), "available", Number(categoryId));
-
-                // Nếu người dùng chọn ảnh mới, xóa ảnh cũ và upload mới
-                if (imageUri && imageUri !== product?.image) {
-                    if (imageId) await ImageApi.remove(imageId);
-                    await ImageApi.create(product!.id, imageUri);
+                if (!imageUri) {
+                    Alert.alert("Vui lòng chọn ảnh cho sản phẩm!");
+                    return;
                 }
+                await ProductApi.update(product!.id, name.trim(), Number(price), "available", Number(categoryId), imageUri);
             }
             socket.emit("product_updated");
             navigation.goBack();
