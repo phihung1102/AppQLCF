@@ -14,7 +14,6 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { Product } from "./adminProduct";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AdminStackParamList } from "../navigation/adminIndex";
-import socket from "../services/socket.js";
 
 type AddProductNavProp = NativeStackNavigationProp<AdminStackParamList, "AddProduct">;
 
@@ -62,15 +61,19 @@ const AddProduct = () => {
                     Alert.alert("Vui lòng chọn ảnh cho sản phẩm!");
                     return;
                 }
-                await ProductApi.create(name.trim(), Number(price), "available", Number(categoryId), imageUri);
+                const res = await ProductApi.create(name.trim(), Number(price), "available", Number(categoryId));
+                const productId = res.data.id;
+                await ImageApi.create(productId, imageUri);
             } else {
-                if (!imageUri) {
-                    Alert.alert("Vui lòng chọn ảnh cho sản phẩm!");
-                    return;
+                await ProductApi.update(product!.id, name.trim(), Number(price), Number(categoryId));
+                const imageChaned = imageUri && imageUri !== product?.image;
+                if (imageChaned) {
+                    if (imageId) {
+                        await ImageApi.remove(imageId);
+                    }
+                    await ImageApi.create(product!.id, imageUri);
                 }
-                await ProductApi.update(product!.id, name.trim(), Number(price), "available", Number(categoryId), imageUri);
             }
-            socket.emit("product_updated");
             navigation.goBack();
         } catch (err) {
             console.log(err);

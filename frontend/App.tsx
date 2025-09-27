@@ -6,9 +6,14 @@
  */
 
 import RootNavigation from "./src/navigation";
+import { AuthProvider } from "./src/context/AuthContext";
 
 function App() {
-  return <RootNavigation/>
+  return (
+    <AuthProvider>
+      <RootNavigation/>
+    </AuthProvider>
+  )
 }
 
 

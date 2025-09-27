@@ -110,15 +110,19 @@ export const globalStyles = StyleSheet.create({
         fontWeight: "bold",
         color: theme.colors.primary,
     },
+    imageAd: {
+        width: 60,
+        height: 60,
+        marginHorizontal: 5,
+    },
     textName: {
         flex: 1,
         fontSize: 16,
         fontWeight: "bold",
-        marginLeft: 12,
         color: theme.colors.primary,
     },
     text: {
-        fontSize: 12,
+        fontSize: 14,
         color: theme.colors.primary,
     },
     title2: {

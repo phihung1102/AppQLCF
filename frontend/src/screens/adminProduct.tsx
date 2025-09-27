@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TouchableOpacity, Image, Platform } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Image, Platform, Switch } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -54,6 +54,12 @@ const AdminProduct = () => {
     return () => { socket.off("product_updated", fetchProducts); };
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchProducts();
+    }, [])
+  );
+
   // Lấy toàn bộ categories
   const fetchCategories = async () => {
     try { const res = await CategoryApi.getAll(); setCategories(res.data); } 
@@ -74,6 +80,19 @@ const AdminProduct = () => {
       );
     } catch (error) { console.log(error); }
   };
+
+  // Bật tắt món
+  const handleToggleStatus = async (item: Product) => {
+    const newStatus = item.status === "available" ? "unavailable" : "available";
+    setProducts(prev => 
+      prev.map(p => p.id === item.id ? {...p, status: newStatus } : p)
+    );
+    try {
+      await ProductApi.updateStatus(item.id, newStatus);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   // xoá
   const handleDelete = (item: Product) => {
@@ -125,20 +144,27 @@ const AdminProduct = () => {
             <View style={globalStyles.componentFlatlist}>
               <View style={{ flexDirection: "row"}}>
                 <Text style={globalStyles.textStt}>{index+1}.</Text>
-                {item.image && <Image source={{ uri: item.image }} style={{width:50,height:50,marginHorizontal:5}} />}
+                {item.image && <Image source={{ uri: item.image }} style={globalStyles.imageAd} />}
               </View>
               <View style={{ flexDirection: "column"}}>
                 <Text style={globalStyles.textName}>{item.name}</Text>
                 <Text style={globalStyles.text}>{item.category_name}</Text>
                 <Text style={globalStyles.text}>{item.price} ₫</Text>
               </View>
-              <View style={{ flexDirection: "row"}}>
-                <TouchableOpacity onPress={()=>navigation.navigate("AddProduct",{ mode:"edit", product:item })} style={{marginHorizontal:8}}>
-                  <FontAwesome5 name="edit" size={18} color={theme.colors.primary}/>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleDelete(item)} style={{ marginHorizontal: 8 }}>
-                  <FontAwesome5 name="trash" size={18} color={theme.colors.primary}/>
-                </TouchableOpacity>
+              <View style={{ flexDirection: "column", alignItems: "flex-start" }}>
+                <View style={{ flexDirection: "row", marginBottom: 10 }}>
+                  <TouchableOpacity onPress={()=>navigation.navigate("AddProduct",{ mode:"edit", product:item })} style={{marginHorizontal:8}}>
+                    <FontAwesome5 name="edit" size={18} color={theme.colors.primary}/>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDelete(item)} style={{ marginHorizontal: 8 }}>
+                    <FontAwesome5 name="trash" size={18} color={theme.colors.primary}/>
+                  </TouchableOpacity>
+                </View>
+                <Switch
+                  value={item.status === "available"}
+                  onValueChange={() => handleToggleStatus(item)}
+                  thumbColor={item.status === 'available' ? theme.colors.primary : "#ccc"}
+                />
               </View>
             </View>
           )}

@@ -25,7 +25,7 @@ CREATE TABLE categories (
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
+    price INT NOT NULL,
     status ENUM('available', 'unavailable') DEFAULT 'available',
     category_id INT NOT NULL,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
@@ -36,7 +36,7 @@ CREATE TABLE products (
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     table_number INT NOT NULL,
-    total DECIMAL(10,2) NOT NULL DEFAULT 0,
+    total INT NOT NULL DEFAULT 0,
     note VARCHAR(255),
     status ENUM('pending','processing','completed','cancelled') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -47,8 +47,8 @@ CREATE TABLE order_items (
     order_id INT NOT NULL,
     product_id INT NOT NULL,
     quantity INT NOT NULL,
-    unit_price DECIMAL(10,2) NOT NULL,
-    subtotal DECIMAL(10,2) NOT NULL,
+    unit_price INT NOT NULL,
+    subtotal INT NOT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

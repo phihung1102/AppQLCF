@@ -27,9 +27,12 @@ export const validateLogin = validate([
 
 export const validateProduct = validate([
   body("name").notEmpty().withMessage("Tên sản phẩm không được để trống!"),
-  body("price").isFloat({ min: 0 }).withMessage("Giá sản phẩm phải >= 0!"),
-  body("status").optional().isIn(["available", "unavailable"]).withMessage("Trạng thái không hợp lệ!"),
+  body("price").isInt({ min: 0 }).withMessage("Giá sản phẩm phải là số nguyên và >= 0!"),
   body("category_id").isInt().withMessage("Category ID phải là số nguyên!"),
+]);
+
+export const validateProductStatus = validate([
+  body("status").optional().isIn(["available", "unavailable"]).withMessage("Trạng thái không hợp lệ!"),
 ]);
 
 export const validateCategory = validate([
@@ -58,6 +61,6 @@ export const validateOrder = validate([
 export const validateOrderItem = validate([
   body("product_id").isInt().withMessage("Product ID phải là số nguyên!"),
   body("quantity").isInt({ min: 1 }).withMessage("Số lượng phải >= 1!"),
-  body("unit_price").isFloat({ min: 0 }).withMessage("Đơn giá phải >= 0!"),
+  body("unit_price").isInt({ min: 0 }).withMessage("Đơn giá phải là số nguyên và >= 0!"),
 ]);
 
