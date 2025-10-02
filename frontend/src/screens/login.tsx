@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { View, Text, Alert } from "react-native";
+import { useState, useContext } from "react";
+import { View, Text,  } from "react-native";
 import { RootStackParamList } from "../navigation";
 import CustomInput from "../components/input";
 import CustomButton from "../components/button";
@@ -8,6 +8,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { validateLogin } from "../utils/validateInput";
 import MessageBox from '../components/messageBox';
 import { login } from "../services/auth";
+import { AuthContext } from "../context/AuthContext";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -18,6 +19,7 @@ export default function Login({ navigation }: Props) {
     const [message, setMessage] = useState("");
     const [showMessage, setShowMessage] = useState(false);
     const [isError, setIsError] = useState(false);
+    const { setUser } = useContext(AuthContext);
 
     const handleLogin = async () => {
         let newErrors = validateLogin(email, password);
@@ -25,9 +27,8 @@ export default function Login({ navigation }: Props) {
         if (newErrors.email || newErrors.password) return;
         
         try {
-            const res = await login(email, password);
-            if (res.role === "admin") { navigation.replace("AdminStack"); }
-            else { navigation.replace("Home"); }
+            const user = await login(email, password);
+            setUser(user)
         } catch (error: any) {
             const errorMessage = error.response?.data?.message || "Đăng nhập thất bại, vui lòng thử lại!";
             setMessage(errorMessage);

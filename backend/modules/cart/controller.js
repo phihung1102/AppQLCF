@@ -1,14 +1,18 @@
-import { getCartSV, createCartSV, deleteCartSV, createCartItemSV, updateCartItemSV, deleteCartItemSV } from "./service.js";
+import { getOrCreateCartByTableSV, getOrCreateCartByUserSV, deleteCartSV, createCartItemSV, updateCartItemSV, deleteCartItemSV } from "./service.js";
 import { catchAsync } from "../../utils/catchAsync.js";
 
-export const getCartCTL = catchAsync(async (req, res) => {
-  const cart = await getCartSV(req.params.id);
+// --- Khách theo bàn ---
+export const getOrCreateCartByTableCTL = catchAsync(async (req, res) => {
+  const { table_number } = req.body;
+  const cart = await getOrCreateCartByTableSV(table_number);
   res.json(cart);
 });
 
-export const createCartCTL = catchAsync(async (req, res) => {
-  const id = await createCartSV(req.body.table_number);
-  res.json({ id });
+// --- Nhân viên theo user_id ---
+export const getOrCreateCartByUserCTL = catchAsync(async (req, res) => {
+  const { user_id } = req.body;
+  const cart = await getOrCreateCartByUserSV(user_id);
+  res.json(cart);
 });
 
 export const deleteCartCTL = catchAsync(async (req, res) => {
@@ -16,6 +20,7 @@ export const deleteCartCTL = catchAsync(async (req, res) => {
   res.json({ deleted });
 });
 
+// cartitems
 export const createCartItemCTL = catchAsync(async (req, res) => {
   const id = await createCartItemSV(
     req.body.cart_id,

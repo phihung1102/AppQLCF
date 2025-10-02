@@ -1,9 +1,10 @@
 import api from "./api";
+import { Product } from "../types/inđex";
 
 export const ProductApi = {
-    getAll: () => api.get("/product"),
+    getAll: () => api.get<Product[]>("/product"),
 
-    getProduct: (id: number) => api.get(`/product/${id}`),
+    getProduct: (id: number) => api.get<Product[]>(`/product/${id}`),
 
     create: (name: string, price: number, status: string, category_id: number) =>
         api.post("/product", {name, price, status, category_id}),

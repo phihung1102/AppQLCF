@@ -1,44 +1,132 @@
 import pool from "../../db.js";
 
-// orders
-export const getAllOrder = async () => {
-  const [rows] = await pool.query("SELECT * FROM orders");
+// Lấy tất cả order, có thể lọc table_number hoặc user_id
+export const getAllOrder = async ({ table_number, user_id, fromDate, toDate }) => {
+  let sql = "SELECT * FROM orders WHERE 1";
+  const params = [];
+
+  if (table_number) {
+    sql += " AND table_number=?";
+    params.push(table_number);
+  }
+
+  if (user_id) {
+    sql += " AND user_id=?";
+    params.push(user_id);
+  }
+
+  if (fromDate && toDate) {
+    // lọc khoảng ngày
+    sql += " AND DATE(created_at) BETWEEN ? AND ?";
+    params.push(fromDate, toDate);
+  } else if (fromDate) {
+    // chỉ 1 ngày
+    sql += " AND DATE(created_at) = ?";
+    params.push(fromDate);
+  }
+
+  sql += " ORDER BY created_at DESC";
+  const [rows] = await pool.query(sql, params);
   return rows;
 };
 
+
+// Lấy order theo table_number hoặc user_id, chỉ những order chưa completed hoặc cancelled
+export const getNotCompletedOrCancelledOrders = async ({ table_number, user_id }) => {
+  let sql = "SELECT * FROM orders WHERE status NOT IN ('completed','cancelled')";
+  const params = [];
+
+  if (table_number) {
+    sql += " AND table_number=?";
+    params.push(table_number);
+  }
+  if (user_id) {
+    sql += " AND user_id=?";
+    params.push(user_id);
+  }
+  sql += " ORDER BY created_at DESC";
+  const [rows] = await pool.query(sql, params);
+  return rows;
+};
+
+// Lấy 1 order theo id
 export const getOrder = async (id) => {
   const [rows] = await pool.query("SELECT * FROM orders WHERE id=?", [id]);
   return rows[0];
 };
 
-export const createOrder = async (table_number, total, note, status) => {
-  const [result] = await pool.query("INSERT INTO orders (table_number, total, note, status) VALUES (?, ?, ?, ?)", [table_number, total, note, status] );
+// Tạo order mới
+export const createOrder = async (table_number, user_id, total, note, status) => {
+  const [result] = await pool.query(
+    "INSERT INTO orders (table_number, user_id, total, note, status) VALUES (?, ?, ?, ?, ?)",
+    [table_number, user_id, total, note, status]
+  );
   return result.insertId;
 };
 
-export const updateOrder = async (id, status, note) => {
-  const [result] = await pool.query("UPDATE orders SET status=? WHERE id=?", [status, id] );
+// Cập nhật status
+export const updateOrder = async (id, status, note, total = null) => {
+  let sql = "UPDATE orders SET status=?, note=?";
+  const params = [status, note];
+
+  if (total !== null) {
+    sql += ", total=?";
+    params.push(total);
+  }
+
+  sql += " WHERE id=?";
+  params.push(id);
+
+  const [result] = await pool.query(sql, params);
   return result.affectedRows;
 };
 
+// Xóa order
 export const deleteOrder = async (id) => {
   const [result] = await pool.query("DELETE FROM orders WHERE id=?", [id]);
   return result.affectedRows;
 };
 
-// order_items
+// Lấy items của order kèm ảnh sản phẩm
 export const getOrderItems = async (order_id) => {
   const [rows] = await pool.query(
-    `SELECT oi.*, p.name 
-     FROM order_items oi 
-     JOIN products p ON oi.product_id = p.id 
-     WHERE oi.order_id=?`,
+    `SELECT 
+        oi.id AS order_item_id,
+        oi.quantity,
+        oi.unit_price,
+        oi.subtotal,
+        p.id AS product_id,
+        p.name AS product_name,
+        p.price AS product_price,
+        p.category_id,
+        (SELECT image_url FROM images WHERE product_id = p.id LIMIT 1) AS image_url
+     FROM order_items oi
+     JOIN products p ON oi.product_id = p.id
+     WHERE oi.order_id = ?`,
     [order_id]
   );
-  return rows;
+
+  // map lại thành đúng structure frontend cần
+  return rows.map(r => ({
+    id: r.order_item_id,
+    quantity: r.quantity,
+    unit_price: r.unit_price,
+    subtotal: r.subtotal,
+    product: {
+      id: r.product_id,
+      name: r.product_name,
+      price: r.product_price,
+      image_url: r.image_url || null
+    }
+  }));
 };
 
+
+// Thêm item vào order
 export const addOrderItem = async (order_id, product_id, quantity, unit_price, subtotal) => {
-  const [result] = await pool.query("INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) VALUES (?, ?, ?, ?, ?)", [order_id, product_id, quantity, unit_price, subtotal] );
+  const [result] = await pool.query(
+    "INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) VALUES (?, ?, ?, ?, ?)",
+    [order_id, product_id, quantity, unit_price, subtotal]
+  );
   return result.insertId;
 };

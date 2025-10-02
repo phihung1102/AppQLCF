@@ -16,10 +16,3 @@ export const register = async (name: string, email: string, password: string) =>
     const res = await AuthAPI.register(name, email, password);
     return res.data;
 };
-
-export const logout = async (navigation: any) => {
-    const refreshToken = await AsyncStorage.getItem("refreshToken");
-    if (refreshToken) await AuthAPI.logout(refreshToken);
-    await AsyncStorage.multiRemove(["accessToken", "refreshToken", "user"]);
-    if(navigation) navigation.replace("Login");
-};

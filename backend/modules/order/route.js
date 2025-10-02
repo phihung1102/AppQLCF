@@ -1,13 +1,20 @@
 import express from "express";
-import { getAllOrderCTL, getOrderCTL, createOrderCTL, updateOrderCTL, deleteOrderCTL } from "./controller.js";
-import { validateOrder, validateOrderItem } from "../../middlewares/validators.js";
+import {
+  getAllOrderCTL,
+  getNotCompletedOrCancelledOrdersCTL,
+  getOrderCTL,
+  createOrderCTL,
+  updateOrderCTL,
+  deleteOrderCTL
+} from "./controller.js";
 
 const router = express.Router();
 
-router.get("/", getAllOrderCTL);
-router.get("/:id", getOrderCTL);
-router.post("/", validateOrder, createOrderCTL);
-router.put("/:id", validateOrder, updateOrderCTL);
-router.delete("/:id", deleteOrderCTL);
+router.get("/", getAllOrderCTL);         // lấy tất cả order, filter query ?table_number=&user_id=
+router.get("/status", getNotCompletedOrCancelledOrdersCTL);
+router.get("/:id", getOrderCTL);         // lấy 1 order chi tiết
+router.post("/", createOrderCTL);        // tạo order
+router.put("/:id", updateOrderCTL);      // update status hoặc note
+router.delete("/:id", deleteOrderCTL);   // xóa order
 
 export default router;

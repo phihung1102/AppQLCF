@@ -11,7 +11,9 @@ export interface Product {
 }
 
 export const ProductApi = {
-    getAvailable: () => api.get<Product[]>("/product/status"),
-    getById: (id: number) => api.get<Product[]>(`/product/${id}`),
+    getAvailable: () => 
+        api.get<Product[]>("/product/status"),
+    getById: (id: number) => 
+        api.get<Product[]>(`/product/${id}`),
 }
 

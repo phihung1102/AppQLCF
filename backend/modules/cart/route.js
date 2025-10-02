@@ -1,15 +1,16 @@
 import express from "express";
-import { getCartCTL, createCartCTL, deleteCartCTL, createCartItemCTL, updateCartItemCTL, deleteCartItemCTL } from "./controller.js";
-import { validateCart, validateCartItem } from "../../middlewares/validators.js";
+import { getOrCreateCartByTableCTL, getOrCreateCartByUserCTL, deleteCartCTL, createCartItemCTL, updateCartItemCTL, deleteCartItemCTL } from "./controller.js";
+import { validateCart, validateCartItemCreate, validateCartItemUpdate } from "../../middlewares/validators.js";
 
 const router = express.Router();
 
-router.get("/:id", getCartCTL);
-router.post("/", validateCart, createCartCTL);
+
+router.post("/table", validateCart, getOrCreateCartByTableCTL);
+router.post("/user", getOrCreateCartByUserCTL);
 router.delete("/:id", deleteCartCTL);
 
-router.post("/items", validateCartItem, createCartItemCTL);
-router.put("/items/:id", validateCartItem, updateCartItemCTL);
+router.post("/items", validateCartItemCreate, createCartItemCTL);
+router.put("/items/:id", validateCartItemUpdate, updateCartItemCTL);
 router.delete("/items/:id", deleteCartItemCTL);
 
 export default router;

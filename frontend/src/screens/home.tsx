@@ -1,20 +1,17 @@
 import { Text, View, Button } from 'react-native';
 import React from 'react';
-import { RootStackParamList } from '../navigation';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { logout } from '../services/auth';
+import { AuthContext } from '../context/AuthContext';
+import { useContext } from 'react';
 
-
-type Props = NativeStackScreenProps<RootStackParamList, "Home">;
-
-const Home = ({ navigation}: Props) => {
+const Home = () => {
+  const { logout } = useContext(AuthContext);
   
   return (
     <View>
       <Text>Home</Text>
-      <Button title='Đăng xuất' onPress={() => logout(navigation)} />
+      <Button title='Đăng xuất' onPress={() => logout()} />
     </View>
   )
 }
 
-export default Home
+export default Home;

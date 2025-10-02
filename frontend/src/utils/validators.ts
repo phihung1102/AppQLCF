@@ -20,3 +20,34 @@ export const validateName = (name: string) => {
     if (name.length < 2) return "Tên tài khoản phải có ít nhất 2 ký tự";
     return "";
 }
+
+// user
+export const validateFullname = (fullname: string) => {
+  if (!fullname) return "Họ và tên không được để trống!";
+  if (fullname.length < 5) return "Họ và tên phải có ít nhất 5 ký tự";
+  return "";
+};
+
+export const validatePhone = (phone: string) => {
+  if (!phone) return "Số điện thoại không được để trống!";
+  const regex = /^[0-9]{10}$/;
+  if (!regex.test(phone)) {
+    return "Số điện thoại phải có đúng 10 chữ số!";
+  }
+  return "";
+};
+
+
+export const validateGender = (gender: string) => {
+  if (gender && !["male", "female", "other"].includes(gender.toLowerCase())) {
+    return "Giới tính không hợp lệ!";
+  }
+  return "";
+};
+
+export const validateAddress = (address: string) => {
+  if (address && address.length < 5) {
+    return "Địa chỉ quá ngắn!";
+  }
+  return "";
+};

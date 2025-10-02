@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, Image, ScrollView, Alert, FlatList } from "react-native";
+import { View, Text, TouchableOpacity, Image, ScrollView, Alert, Platform } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import CustomInput from "../components/input";
 import CustomButton from "../components/button";
@@ -11,11 +11,12 @@ import { ImageApi } from "../api/imageApi";
 import { pickImageFromDevice } from "../helpers/imageHelper";
 import { requestGalleryPermission } from "../helpers/permissionHelper";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { Product } from "./adminProduct";
+import { Product } from "../types/inđex";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AdminStackParamList } from "../navigation/adminIndex";
 
 type AddProductNavProp = NativeStackNavigationProp<AdminStackParamList, "AddProduct">;
+const BASE_URL = Platform.OS === "android" ? "http://10.0.2.2:3000" : "http://192.168.1.5:3000";
 
 const AddProduct = () => {
     const navigation = useNavigation<AddProductNavProp>();
@@ -26,9 +27,10 @@ const AddProduct = () => {
     const [name, setName] = useState(product?.name || "");
     const [price, setPrice] = useState(product?.price?.toString() || "");
     const [categoryId, setCategoryId] = useState<number | null>(product?.category_id || null);
-    const [imageUri, setImageUri] = useState<string | null>(product?.image || null);
-    const [imageId, setImageId] = useState<number | null>(product?.imageId || null);
+    const [imageId, setImageId] = useState<number | null>(product?.image?.id || product?.imageId || null);
     const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [imageUri, setImageUri] = useState<string | null>(null); // ảnh mới
+    const existingImage = product?.image?.url ? `${BASE_URL}${product.image.url}` : null; // ảnh cũ
 
     useEffect(() => { fetchCategories(); }, []);
 
@@ -66,8 +68,8 @@ const AddProduct = () => {
                 await ImageApi.create(productId, imageUri);
             } else {
                 await ProductApi.update(product!.id, name.trim(), Number(price), Number(categoryId));
-                const imageChaned = imageUri && imageUri !== product?.image;
-                if (imageChaned) {
+                const imageChanged = imageUri && imageUri !== product?.image?.url;
+                if (imageChanged) {
                     if (imageId) {
                         await ImageApi.remove(imageId);
                     }
@@ -81,10 +83,10 @@ const AddProduct = () => {
     };
 
     return (
-        <ScrollView style={globalStyles.container2}>
+        <ScrollView style={globalStyles.container3}>
             <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10, marginTop: 30}}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: 10 }}>
-                <FontAwesome5 name="arrow-left" size={20} color={theme.colors.primary} />
+                    <FontAwesome5 name="arrow-left" size={20} color={theme.colors.primary} />
                 </TouchableOpacity>
                 <Text style={{ fontSize: 18, fontWeight: "bold" }}>{mode === "add" ? "Thêm sản phẩm" : "Sửa sản phẩm"}</Text>
             </View>
@@ -94,8 +96,13 @@ const AddProduct = () => {
             <TouchableOpacity onPress={handlePickImage} style={{ padding: 10, backgroundColor: "#eee", marginVertical: 5, alignItems: "center" }}>
                 <Text>{imageUri ? "Thay đổi ảnh" : "Tải ảnh lên"}</Text>
             </TouchableOpacity>
-            {imageUri && <Image source={{ uri: imageUri }} style={{ width: 200, height: 200, marginVertical: 10, alignSelf: "center" }} />}
-
+            {(imageUri || existingImage) && (
+                <Image
+                    source={{ uri: imageUri ? imageUri : existingImage! }}
+                    style={{ width: 200, height: 200, borderRadius: 10, alignSelf: 'center' }}
+                    resizeMode="cover"
+                />
+            )}
             {/* Tên & Giá */}
             <CustomInput placeholder="Tên sản phẩm" value={name} onChangeText={setName} />
             <CustomInput placeholder="Giá" value={price} onChangeText={setPrice} keyboardType="numeric" />

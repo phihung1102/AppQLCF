@@ -2,16 +2,22 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "../screens/login";
 import Register from "../screens/register";
-import Home from "../screens/home";
+import UserTabs from "../screens/userTabBottom";
+import CheckInfo from "../screens/checkInfo";
 import AdminStackNavigator from "./adminIndex";
+import CartDetail from "../screens/cartDetail";
+import UserOrderDetail from "../screens/userOrderDetail";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 export type RootStackParamList = {
     Login: undefined;
-    Home: undefined;
+    UserTabs: undefined;
     Register: undefined;
     AdminStack: undefined;
+    CheckInfo: undefined;
+    CartDetail: { userId: number };
+    UserOrderDetail: {table_number?: number; userId?: number; orderId: number}
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -26,14 +32,22 @@ export default function RootNavigation() {
                     user.role === "admin" ? (
                         <Stack.Screen name="AdminStack" component={AdminStackNavigator} />
                     ) : (
-                        <Stack.Screen name="Home" component={Home} />
+                        user.isFirstLogin ? (
+                            <Stack.Screen name="CheckInfo" component={CheckInfo} />
+                        ) : (
+                            <>
+                                <Stack.Screen name="UserTabs" component={UserTabs} />
+                                <Stack.Screen name="CartDetail" component={CartDetail} />
+                                <Stack.Screen name="UserOrderDetail" component={UserOrderDetail} />
+                            </>
+                        )
                     )
                 ) : (
                     <>
                         <Stack.Screen name="Login" component={Login} />
                         <Stack.Screen name="Register" component={Register} />
                     </>
-                ) }
+                )}
             </Stack.Navigator>
         </NavigationContainer>
     )

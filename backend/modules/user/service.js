@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
-import { getAll, createUser, updateUser, deleteUser, findByEmail } from "./model.js";
+import { getAll, getUserById, createUser, updateUser, updateUserInfo , deleteUser, findByEmail } from "./model.js";
 import ApiError from "../../utils/apiError.js";
 
-export const getAllSV = async () => {
-    return await getAll();
-}
+export const getAllSV =  () => getAll();
+
+export const getUserByIdSv = (id) => getUserById(id);
 
 export const createUserSV = async (user) => {
     const existing = await findByEmail(user.email);
@@ -14,10 +14,8 @@ export const createUserSV = async (user) => {
     return await createUser({...user, password: hashedPassword });
 };
 
-export const updateUserSV = async (id, role) => {
-    return await updateUser(id, role);
-};
+export const updateUserSV = (id, role) =>  updateUser(id, role);
 
-export const deleteUserSV = async (id) => {
-    return await deleteUser(id);
-}
+export const updateUserInfoSV =  (id, info) => updateUserInfo(id, info);
+
+export const deleteUserSV = (id) => deleteUser(id);

@@ -7,11 +7,7 @@ import MessageBox from "../components/messageBox";
 import { theme } from "../styles/theme";
 import { globalStyles } from "../styles/globalCss";
 import { CategoryApi } from "../api/categoryApi";
-
-interface Category {
-  id: number;
-  name: string;
-}
+import { Category } from "../types/inđex";
 
 const AdminCategory = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -124,12 +120,12 @@ const AdminCategory = () => {
     <View style={globalStyles.container2}>
       <View style={{ flexDirection: "row", justifyContent: "flex-end", marginBottom: 16}}>
         <TouchableOpacity onPress={handleAddCategory}>
-          <FontAwesome5 name="plus" solid color={"#a4a4a4"} style={{ marginRight: 20, fontSize: 18 }} />
+          <FontAwesome5 name="plus" solid color={"#795548"} style={{ marginRight: 20, fontSize: 18 }} />
         </TouchableOpacity>
         
-        <TouchableOpacity onPress={() => console.log("Search pressed!")}>
-          <FontAwesome5 name="search" solid color={"#a4a4a4"} style={{ marginRight: 16, fontSize: 18 }} />
-        </TouchableOpacity>
+        {/* <TouchableOpacity onPress={() => console.log("Search pressed!")}>
+          <FontAwesome5 name="search" solid color={"#795548"} style={{ marginRight: 16, fontSize: 18 }} />
+        </TouchableOpacity> */}
       </View>
       <Text style={globalStyles.title2}>Danh mục</Text>
 

@@ -5,6 +5,8 @@ export const CartApi = {
 
     create: (table_number: number) => api.post("/cart", {table_number}),
 
+    getOrCreateByUser: (user_id: number) => api.post("/cart/user", { user_id }),
+
     remove: (id: number) => api.delete(`/cart/${id}`),
 
     createItem: (cart_id: number, product_id: number, quantity: number) => api.post("/cart/items", {cart_id, product_id, quantity}),

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import AdminProduct from "./adminProduct";
@@ -8,7 +8,7 @@ import AdminOrder from "./adminOrder";
 import AdminAnalytic from "./adminAnalytic";
 import { theme } from "../styles/theme";
 import MessageBox from "../components/messageBox";
-import { logout } from "../services/auth";
+import { AuthContext } from "../context/AuthContext";
 
 type AdminTabParamList = {
     Product: undefined;
@@ -20,8 +20,9 @@ type AdminTabParamList = {
 
 const Tab = createBottomTabNavigator<AdminTabParamList>();
 
-export default function AdminTabs({ navigation }: any) {
+export default function AdminTabs() {
     const [confirmVisible, setConfirmVisible] = useState(false);
+    const { logout } = useContext(AuthContext);
 
     return (
         <>
@@ -43,7 +44,7 @@ export default function AdminTabs({ navigation }: any) {
                     headerTitle: '',
                     headerLeftContainerStyle: { paddingLeft: 16 },
                     headerRightContainerStyle: { paddingRight: 16 },
-                    headerLeft: () => (
+                    headerRight: () => (
                         <FontAwesome5 name="sign-out-alt" size={24} color="#a8a8a8ff" style={{ marginLeft: 16 }} onPress={() => setConfirmVisible(true)} />
                     ),
                 })}
@@ -60,9 +61,9 @@ export default function AdminTabs({ navigation }: any) {
                 message="Bạn có chắc muốn đăng xuất không?"
                 type="confirm"
                 onCancel={() => setConfirmVisible(false)}
-                onConfirm={() => {
+                onConfirm={async () => {
                     setConfirmVisible(false);
-                    logout(navigation);
+                    await logout();
                 }}
             />
         </>

@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, Children} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthAPI } from "../api/authApi";
 
 type AuthContextType = {
     user: any | null;
@@ -16,27 +17,52 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
-    const [user, setUser] = useState<any | null>(null);
+    const [user, setUserState] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
 
-    //Load lại user khi mở app
+    // Load user khi mở app
     useEffect(() => {
         const loadUser = async () => {
-            const userJson = await AsyncStorage.getItem("user");
-            if (userJson) { setUser(JSON.parse(userJson)); }
-            setLoading(false);
+            try {
+                const userJson = await AsyncStorage.getItem("user");
+                if (userJson) {
+                    setUserState(JSON.parse(userJson));
+                }
+            } finally {
+                setLoading(false);
+            }
         };
         loadUser();
     }, []);
 
-    const logout = async () => {
-        await AsyncStorage.multiRemove(["accessToken", "refreshToken", "user"]);
-        setUser(null);
+    // Hàm setUser mới
+    const setUser = async (newUser: any) => {
+        if (newUser) {
+            await AsyncStorage.setItem("user", JSON.stringify(newUser));
+            setUserState(newUser);
+        } else {
+            await AsyncStorage.removeItem("user");
+            setUserState(null);
+        }
     };
 
+    const logout = async () => {
+        const refreshToken = await AsyncStorage.getItem("refreshToken");
+        if (refreshToken) {
+            try {
+                await AuthAPI.logout(refreshToken);
+            } catch (err) {
+                console.warn("Logout API failed", err);
+            }
+        }
+        await AsyncStorage.multiRemove(["accessToken", "refreshToken", "user"]);
+        setUserState(null);
+    };
+
+
     return (
-        <AuthContext.Provider value={{ user, loading, setUser, logout}}>
+        <AuthContext.Provider value={{ user, loading, setUser, logout }}>
             {children}
         </AuthContext.Provider>
-    )
-}
+    );
+};

@@ -40,11 +40,18 @@ export const validateCategory = validate([
 ]);
 
 export const validateCart = validate([
-  body("tableNumber").isInt({ min: 1 }).withMessage("Số bàn phải >= 1!"),
+  body("table_number").isInt({ min: 1 }).withMessage("Số bàn phải >= 1!"),
 ]);
 
-export const validateCartItem = validate([
-  body("productId").isInt().withMessage("Product ID phải là số nguyên!"),
+// POST /cart/items
+export const validateCartItemCreate = validate([
+  body("cart_id").isInt().withMessage("Cart ID phải là số nguyên!"),
+  body("product_id").isInt().withMessage("Product ID phải là số nguyên!"),
+  body("quantity").isInt({ min: 1 }).withMessage("Số lượng phải >= 1!"),
+]);
+
+// PUT /cart/items/:id
+export const validateCartItemUpdate = validate([
   body("quantity").isInt({ min: 1 }).withMessage("Số lượng phải >= 1!"),
 ]);
 

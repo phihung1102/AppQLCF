@@ -1,20 +1,23 @@
 import api from "./api";
-
-type OrderItem = {
-    product_id: number;
-    quantity: number;
-    unit_price: number;
-}
+import { Order, OrderItem, OrderFilterParams } from "../types/inđex";
 
 export const OrderApi = {
-    getAll: () => api.get("/order"),
+  getAll: (params?: {
+    table_number?: number;
+    user_id?: number;
+    fromDate?: string; // YYYY-MM-DD
+    toDate?: string;   // YYYY-MM-DD
+  }) => api.get<Order[]>("/order", { params }),
 
-    getOrder: (id: number) => api.get(`/order/${id}`),
+  getNotCompletedOrCancelled: (params?: { table_number?: number; user_id?: number }) =>
+    api.get<Order[]>("/order/status", { params }),
 
-    create: (table_number: number, note: string, status: string, items: OrderItem[]) =>
-        api.post("/order", {table_number, note, status, items}),
+  getOrder: (id: number) => api.get<Order>(`/order/${id}`),
 
-    update: (id: number, status: string) => api.put(`/order/${id}`, {status}),
+  create: (table_number: number, user_id: number, note: string, status: string, items: OrderItem[]) =>
+    api.post("/order", { table_number, user_id, note, status, items }),
 
-    remove: (id: number) => api.delete(`/order/${id}`),
-}
+  update: (id: number, status: string) => api.put(`/order/${id}`, { status }),
+
+  remove: (id: number) => api.delete(`/order/${id}`),
+};

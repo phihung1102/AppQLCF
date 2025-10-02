@@ -35,10 +35,12 @@ CREATE TABLE products (
 
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    table_number INT NOT NULL,
+    table_number INT NULL,
+    user_id INT NULL,
     total INT NOT NULL DEFAULT 0,
     note VARCHAR(255),
     status ENUM('pending','processing','completed','cancelled') DEFAULT 'pending',
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -56,7 +58,9 @@ CREATE TABLE order_items (
 
 CREATE TABLE carts (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    table_number INT NOT NULL,
+    table_number INT NULL,
+    user_id INT NULL,
+    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
