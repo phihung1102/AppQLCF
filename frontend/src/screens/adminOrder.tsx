@@ -72,8 +72,8 @@ const AdminOrder = () => {
 
   // hiển thị chủ sở hữu order
   const getOrderOwner = (order: Order) => {
-    if (order.table_number) return `Bàn ${order.table_number}`;
-    if (order.user_id) return `Nhân viên bấm máy #${order.user_id}`;
+    if (order.table_number) return `Khách order tại bàn ${order.table_number}`;
+    if (order.user_id && order.user_name) return `Bán mang đi (${order.user_name})`;
     return "Khách lạ";
   };
 
@@ -125,7 +125,7 @@ const AdminOrder = () => {
                 onPress={() => handleDelete(item)}
                 style={{ marginHorizontal: 8 }}
               >
-                <FontAwesome5 name="trash" size={18} color={theme.colors.primary} />
+                <FontAwesome5 name="trash" size={18} color="#ff0000ff" />
               </TouchableOpacity>
             </TouchableOpacity>
           )}

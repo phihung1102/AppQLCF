@@ -42,6 +42,9 @@ export default function AdminTabs() {
                     tabBarInactiveTintColor: '#a4a4a4',
                     headerShown: true,
                     headerTitle: '',
+                    headerStyle: {
+                        backgroundColor: theme.colors.background2,
+                    },
                     headerLeftContainerStyle: { paddingLeft: 16 },
                     headerRightContainerStyle: { paddingRight: 16 },
                     headerRight: () => (

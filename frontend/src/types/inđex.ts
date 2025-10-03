@@ -43,6 +43,7 @@ export interface Order {
   status: string;
   created_at: string;
   items: OrderItem[];
+  user_name: string;
 }
 
 export interface OrderFilterParams {

@@ -495,6 +495,7 @@ export const globalStyles = StyleSheet.create({
         color: "#fff",
         fontWeight: "bold",
         fontSize: 16,
+        textAlign: "center"
     },
 
 

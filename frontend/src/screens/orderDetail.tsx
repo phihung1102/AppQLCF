@@ -11,8 +11,7 @@ import { AdminStackParamList } from "../navigation/adminIndex";
 type OrderDetailNavProp = NativeStackNavigationProp<AdminStackParamList, "OrderDetail">;
 type OrderDetailRouteProp = RouteProp<AdminStackParamList, "OrderDetail">;
 
-// BASE_URL backend để nối với path ảnh
-const BASE_URL = Platform.OS === "android" ? "http://10.0.2.2:3000" : "http://192.168.1.5:3000" ;
+const BASE_URL = Platform.OS === "android" ? "http://10.0.2.2:3000" : "http://192.168.1.5:3000";
 
 const OrderDetail = () => {
   const navigation = useNavigation<OrderDetailNavProp>();
@@ -26,7 +25,6 @@ const OrderDetail = () => {
     OrderApi.getOrder(id)
       .then((res) => {
         const order = res.data;
-        // Xử lý ảnh
         const mappedItems = order.items.map((item) => ({
           ...item,
           product: {
@@ -42,7 +40,6 @@ const OrderDetail = () => {
       .catch((err) => console.error(err));
   }, [id]);
 
-  // Gom nhóm sản phẩm
   const groupedItems = items.reduce((acc: any[], item) => {
     const existing = acc.find((i) => i.product.id === item.product.id);
     if (existing) {
@@ -55,6 +52,13 @@ const OrderDetail = () => {
   }, []);
 
   const totalPrice = groupedItems.reduce((sum, item) => sum + item.subtotal, 0);
+
+  // Hàm helper hiển thị chủ sở hữu order
+  const getOrderOwnerText = (order: Order) => {
+    if (order.table_number) return `Bàn ${order.table_number}`;
+    if (order.user_id) return "Bán mang đi";
+    return "Khách lạ";
+  };
 
   if (!orderItem) {
     return (
@@ -71,7 +75,7 @@ const OrderDetail = () => {
           Mộc Quán
         </Text>
         <Text style={{ textAlign: "center", fontWeight: "600", marginVertical: 4 }}>
-          Bàn {orderItem.table_number ?? "??"}
+          {getOrderOwnerText(orderItem)}
         </Text>
         <Text style={{ textAlign: "center", fontSize: 12, color: "gray", marginBottom: 16 }}>
           Thời gian: {new Date(orderItem.created_at).toLocaleString("vi-VN")}
@@ -91,7 +95,7 @@ const OrderDetail = () => {
           >
             {item.product.image ? (
               <Image
-                source={{ uri: item.product.image }}
+                source={{ uri: item.product.image?.url }}
                 style={{ width: 40, height: 40, borderRadius: 8, marginRight: 12 }}
                 resizeMode="cover"
               />
@@ -123,9 +127,8 @@ const OrderDetail = () => {
         </Text>
       </View>
 
-      {/* Nút quay lại */}
       <TouchableOpacity
-        onPress={() => navigation.goBack()} // ✅ quay lại đúng màn hình Order
+        onPress={() => navigation.goBack()}
         style={{
           marginTop: 20,
           backgroundColor: "#795548",

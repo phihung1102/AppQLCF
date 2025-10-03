@@ -113,10 +113,10 @@ const AdminProductByCategory = () => {
             onPress={() => navigation.navigate("AddProduct", { mode: "edit", product: item })}
             style={{ marginHorizontal: 8 }}
           >
-            <FontAwesome5 name="edit" size={18} color={theme.colors.primary} />
+            <FontAwesome5 name="edit" size={18} color="#00a6ffff" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleDelete(item)} style={{ marginHorizontal: 8 }}>
-            <FontAwesome5 name="trash" size={18} color={theme.colors.primary} />
+            <FontAwesome5 name="trash" size={18} color="#ff0000ff" />
           </TouchableOpacity>
         </View>
         <Switch

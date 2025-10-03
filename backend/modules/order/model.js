@@ -2,34 +2,37 @@ import pool from "../../db.js";
 
 // Lấy tất cả order, có thể lọc table_number hoặc user_id
 export const getAllOrder = async ({ table_number, user_id, fromDate, toDate }) => {
-  let sql = "SELECT * FROM orders WHERE 1";
+  let sql = `
+    SELECT o.*, u.name AS user_name
+    FROM orders o
+    LEFT JOIN users u ON o.user_id = u.id
+    WHERE 1
+  `;
   const params = [];
 
   if (table_number) {
-    sql += " AND table_number=?";
+    sql += " AND o.table_number=?";
     params.push(table_number);
   }
 
   if (user_id) {
-    sql += " AND user_id=?";
+    sql += " AND o.user_id=?";
     params.push(user_id);
   }
 
   if (fromDate && toDate) {
-    // lọc khoảng ngày
-    sql += " AND DATE(created_at) BETWEEN ? AND ?";
+    sql += " AND DATE(o.created_at) BETWEEN ? AND ?";
     params.push(fromDate, toDate);
   } else if (fromDate) {
-    // chỉ 1 ngày
-    sql += " AND DATE(created_at) = ?";
+    sql += " AND DATE(o.created_at) = ?";
     params.push(fromDate);
   }
 
-  sql += " ORDER BY created_at DESC";
+  sql += " ORDER BY o.created_at DESC";
+
   const [rows] = await pool.query(sql, params);
   return rows;
 };
-
 
 // Lấy order theo table_number hoặc user_id, chỉ những order chưa completed hoặc cancelled
 export const getNotCompletedOrCancelledOrders = async ({ table_number, user_id }) => {

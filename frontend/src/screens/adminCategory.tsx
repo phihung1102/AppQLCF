@@ -108,10 +108,10 @@ const AdminCategory = () => {
       <Text style={globalStyles.textStt}>{index + 1}.</Text>
       <Text style={globalStyles.textName}>{item.name}</Text>
       <TouchableOpacity onPress={() => handleEditCategory(item.id)} style={{ marginRight: 20 }}>
-        <FontAwesome5 name="edit" size={18} color={theme.colors.primary} />
+        <FontAwesome5 name="edit" size={18} color="#00a6ffff" />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => handleDeleteCategory(item.id)}>
-        <FontAwesome5 name="trash" size={18} color={theme.colors.primary} />
+        <FontAwesome5 name="trash" size={18} color="#ff0000ff" />
       </TouchableOpacity>
     </View>
   );

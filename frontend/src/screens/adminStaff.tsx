@@ -81,7 +81,7 @@ const AdminStaff = () => {
         onPress={() => handleDelete(item)}
         style={{ marginHorizontal: 8 }}
       >
-        <FontAwesome5 name="trash" size={18} color={theme.colors.primary} />
+        <FontAwesome5 name="trash" size={18} color="#ff0000ff" />
       </TouchableOpacity>
     </View>
   );
